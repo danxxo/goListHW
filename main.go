@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"lesson1/storage/list"
+	list "github.com/danxxo/goListHW/tree/List/storage/list"
 )
 
 func main() {
