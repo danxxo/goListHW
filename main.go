@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"lesson1/storage/list"
+
+	"./storage/list"
 )
 
 func main() {
