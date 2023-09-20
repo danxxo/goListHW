@@ -1,3 +1,3 @@
 # Go practise
 current working branches:
-- [] List
+- List
