@@ -21,24 +21,24 @@ func (l *List) Len() int64 {
 	return l.len
 }
 
-func (l *List) GetAll() (result []int64, ok bool) {
-	cur := l.fn
+func (l *List) GetAll() (values []int64, ok bool) {
+	curr := l.fn
 
-	if cur == nil {
+	if curr == nil {
 		return
 	}
 
-	for cur != nil {
-		result = append(result, cur.value)
-		cur = cur.next
+	for curr != nil {
+		values = append(values, curr.value)
+		curr = curr.next
 	}
-	return result, true
+	return values, true
 }
 
 func (l *List) GetAllByValue(value int64) (ids []int64, ok bool) {
-	arr, _ := l.GetAll()
-	if arr != nil {
-		for key, val := range arr {
+	valuesArr, _ := l.GetAll()
+	if valuesArr != nil {
+		for key, val := range valuesArr {
 			if val == value {
 				ids = append(ids, int64(key))
 				ok = true
@@ -48,19 +48,19 @@ func (l *List) GetAllByValue(value int64) (ids []int64, ok bool) {
 	return
 }
 
-func CreateListFromSlice(in_slice []int64) *List {
+func CreateListFromSlice(inputSlice []int64) *List {
 	var myList *List = Newlist()
-	for _, val := range in_slice {
+	for _, val := range inputSlice {
 		myList.Add(val)
 	}
 	return myList
 }
 
 func (l *List) Print() {
-	var cur = l.fn
-	for cur != nil {
-		fmt.Print(cur.value, "[", cur.index, "]", "->")
-		cur = cur.next
+	var curr = l.fn
+	for curr != nil {
+		fmt.Print(curr.value, "[", curr.index, "]", "->")
+		curr = curr.next
 	}
 	fmt.Println("nil")
 }
@@ -101,16 +101,16 @@ func (l *List) GetByValue(value int64) (id int64, ok bool) {
 
 func (l *List) updateIndexes() {
 	curr := l.fn
-	var index int64 = 0
+	var id int64 = 0
 	for curr != nil {
-		curr.index = index
-		index++
+		curr.index = id
+		id++
 		curr = curr.next
 	}
 }
 
-func (l *List) Add(data int64) {
-	newNode := &node{value: data, next: nil, index: l.len}
+func (l *List) Add(value int64) {
+	newNode := &node{value: value, next: nil, index: l.len}
 
 	if l.fn == nil {
 		l.len++
@@ -118,12 +118,12 @@ func (l *List) Add(data int64) {
 		return
 	}
 
-	cur := l.fn
-	for cur.next != nil {
-		cur = cur.next
+	curr := l.fn
+	for curr.next != nil {
+		curr = curr.next
 	}
 
-	cur.next = newNode
+	curr.next = newNode
 	l.len++
 }
 
@@ -155,56 +155,57 @@ func (l *List) RemoveByIndex(id int64) (ok bool) {
 }
 
 func (l *List) RemoveAllByValue(value int64) (ok bool) {
-	_, exist := l.GetByValue(value)
-	for exist {
+	_, isFinded := l.GetByValue(value)
+	for isFinded {
 		l.RemoveByValue(value)
-		_, exist = l.GetByValue(value)
+		_, isFinded = l.GetByValue(value)
 		ok = true
 	}
 	return
 }
 
-func (l *List) RemoveByValue(nodeData int64) (ok bool) {
-	cur := l.fn
-	if cur == nil {
+func (l *List) RemoveByValue(value int64) (ok bool) {
+	curr := l.fn
+	if curr == nil {
 		return false
 	}
 
-	if cur.value == nodeData {
-		if cur.next == nil {
+	if curr.value == value {
+		if curr.next == nil {
 			l.fn = nil
 			fmt.Println("List is empty")
 			l.len--
 			l.updateIndexes()
 			return true
 		}
-		l.fn = cur.next
+		l.fn = curr.next
 		l.len--
 		l.updateIndexes()
 		return true
 	}
 
-	for cur.next != nil {
-
-		if cur.next.value == nodeData {
-			if cur.next.next != nil {
-				cur.next = cur.next.next
+	for curr.next != nil {
+		if curr.next.value == value {
+			if curr.next.next != nil {
+				curr.next = curr.next.next
 				l.len--
 				l.updateIndexes()
 				return true
 			} else {
-				cur.next = nil
+				curr.next = nil
 				l.len--
 				l.updateIndexes()
 				return true
 			}
 
 		} else {
-			cur = cur.next
+			curr = curr.next
 		}
 	}
 	return false
 }
+
+// Optional, not Tested
 
 // func (l *List) ReveseList() {
 // 	var newSlice = GetSLiceFromList(l)
