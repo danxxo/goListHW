@@ -15,6 +15,7 @@ func Newlist() *List {
 
 func (l *List) Clear() {
 	l.fn = nil
+	l.len = 0
 }
 
 func (l *List) Len() int64 {

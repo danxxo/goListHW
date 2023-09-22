@@ -3,29 +3,27 @@ package main
 import (
 	"fmt"
 
-	list "storage/list"
+	list "storage.com/storage/list"
+	mp "storage.com/storage/map"
 )
 
 func main() {
-	var l = list.Newlist()
-	l.Add(10)
-	l.Add(12)
-	l.Add(100)
-	l.Add(1000)
-	l.Add(10)
-	l.Add(10)
 
-	l.Add(10)
-	l.Add(10)
-	l.Add(10)
-	l.Add(10)
-	fmt.Print(l.GetAllByValue(10))
+	l := list.Newlist()
+	l.Add(1)
 
-	l.Print()
+	myMap := mp.NewMap()
+	myMap.Add(-10)
+	myMap.Add(100)
+	myMap.Add(-10)
 
-	l.RemoveAllByValue(10)
-	l.Print()
+	myMap.Print()
+	fmt.Print("")
+	fmt.Println(myMap.GetAll())
+	fmt.Println(myMap.GetByIndex(0))
+	fmt.Println(myMap.GetByValue(-10))
 
-	fmt.Print(l.GetAllByValue(10))
+	fmt.Println(myMap.Len())
+	fmt.Println(myMap.GetAllByValue(-100))
 
 }
