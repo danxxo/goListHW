@@ -59,3 +59,32 @@ func TestGetByIndex(t *testing.T) {
 	assert.Equal(t, expectedID, int64(0))
 	assert.Equal(t, ok, false)
 }
+
+func TestRemoveByValue(t *testing.T) {
+	myMap := NewMap()
+	var i int64 = 0
+	for ; i < 10; i++ {
+		myMap.Add(i)
+	}
+	myMap.Add(0)
+
+	ok := myMap.RemoveByValue(0)
+	assert.Equal(t, myMap.HashTable[0], int64(1))
+	assert.Equal(t, ok, true)
+	myMap.RemoveAllByValue(0)
+	_, ok = myMap.GetByValue(0)
+	assert.Equal(t, ok, false)
+}
+
+func TestRemoveByIndex(t *testing.T) {
+	myMap := NewMap()
+	var i int64 = 0
+	for ; i < 10; i++ {
+		myMap.Add(i)
+	}
+	myMap.RemoveByIndex(0)
+	myMap.RemoveByIndex(myMap.len - 1)
+	myMap.RemoveByIndex(4)
+	expect, _ := myMap.GetAll()
+	assert.Equal(t, expect, []int64{1, 2, 3, 4, 6, 7, 8})
+}
