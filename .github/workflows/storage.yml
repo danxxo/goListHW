@@ -17,5 +17,8 @@ jobs:
       - name: TestList
         run: go test -v ./storage/list
 
+      - name: Getting Assert
+        run: go get github.com/stretchr/testify/assert
+
       - name: TestMap
         run: go test -v ./storage/map
