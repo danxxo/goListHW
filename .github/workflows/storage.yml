@@ -27,7 +27,7 @@ jobs:
         env: 
           GOPATH: /home/runner/work/goListHW/storage/map
         run: |
-          go install github.com/stretchr/testify/assert
+          go get github.com/stretchr/testify/assert
 
       - name: TestMap
         run: go test -v ./storage/map
