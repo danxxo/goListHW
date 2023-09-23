@@ -17,6 +17,12 @@ jobs:
       - name: TestList
         run: go test -v ./storage/list
 
+      - name: Debug
+        run: |
+          pwd
+          echo ${GOPATH}
+          echo ${GOROOT}
+
       - name: Install dependencies
         run: |
           go get github.com/stretchr/testify/assert
