@@ -1,25 +1,34 @@
 package main
 
 import (
+	"fmt"
+
 	list "storage.com/storage/list"
 	mp "storage.com/storage/map"
 )
 
 func main() {
 
-	l := list.Newlist()
-	l.Add(1)
+	type Storage interface {
+		Clear()
+		Len()
+		GetAll()
+		GetAllByValue(int64) ([]int64, bool)
+		Print()
+		GetByIndex(int64) (int64, bool)
+		GetByValue(int64) (int64, bool)
+		Add(int64)
+		RemoveAllByValue(int64) bool
+		RemoveByIndex(int64) bool
+		RemoveByValue(int64) bool
+	}
 
 	myMap := mp.NewMap()
-	var i int64 = 0
-	for ; i < 7; i++ {
-		myMap.Add(i)
-	}
+	myMap.Add(1)
 
-	i = 0
-	for ; i < 7; i++ {
-		myMap.Print()
-		myMap.RemoveByIndex(0)
-	}
-
+	myList := list.Newlist()
+	myList.Add(1)
+	myMap.Clear()
+	exp, ok := myMap.GetAll()
+	fmt.Println(exp, ok)
 }

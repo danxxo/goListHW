@@ -20,7 +20,7 @@ func NewMap() *mp {
 }
 
 func (myMap *mp) Clear() {
-	myMap.HashTable = nil
+	myMap.HashTable = map[int64]int64{}
 	myMap.len = 0
 }
 
@@ -89,13 +89,6 @@ func (myMap *mp) GetByValue(value int64) (id int64, ok bool) {
 	return 0, false
 }
 
-// func (myMap *mp) updateIndexes(len int64) {
-// 	var i int64 = 0
-// 	for ; i < myMap.len-1; i++ {
-
-// 	}
-// }
-
 func (myMap *mp) Add(data int64) {
 	myMap.HashTable[myMap.len] = data
 	myMap.len++
@@ -129,6 +122,31 @@ func (myMap *mp) RemoveByIndex(id int64) (ok bool) {
 
 }
 
-//func (myMap *mp) RemoveAllByValue(value int64) (ok bool) {}
+func (myMap *mp) RemoveAllByValue(value int64) (ok bool) {
+	if myMap.isEmpty() {
+		return false
+	}
+	//var i int64 = 0
+	finded := myMap.RemoveByValue(value)
+	for finded {
+		finded = myMap.RemoveByValue(value)
+		ok = true
+	}
+	return
 
-//func (myMap *mp) RemoveByValue(nodeData int64) (ok bool) {}
+}
+
+func (myMap *mp) RemoveByValue(value int64) (ok bool) {
+	if myMap.isEmpty() {
+		return false
+	}
+
+	var i int64 = 0
+	for ; i < myMap.len; i++ {
+		if myMap.HashTable[i] == value {
+			myMap.RemoveByIndex(i)
+			return true
+		}
+	}
+	return false
+}
