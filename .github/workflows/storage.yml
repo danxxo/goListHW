@@ -24,10 +24,10 @@ jobs:
           echo ${GOROOT}
 
       - name: Install dependencies
-        env: 
-          GOPATH: /home/runner/work/goListHW/storage
+       # env: 
+        #  GOPATH: /home/runner/work/goListHW/storage
         run: |
-          go get github.com/stretchr/testify/assert
+          go install github.com/stretchr/testify/assert
 
       - name: TestMap
         run: go test -v ./storage/map
