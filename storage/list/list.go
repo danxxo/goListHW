@@ -1,8 +1,12 @@
 package list
 
 import (
+	"errors"
 	"fmt"
+	"reflect"
 )
+
+var ErrMismatchType = errors.New("mismatched type: the type of the provided value does not match the type of items already in the storage")
 
 type List struct {
 	len int64
@@ -22,7 +26,7 @@ func (l *List) Len() int64 {
 	return l.len
 }
 
-func (l *List) GetAll() (values []int64, ok bool) {
+func (l *List) GetAll() (values []interface{}, ok bool) {
 	curr := l.fn
 
 	if curr == nil {
@@ -36,7 +40,7 @@ func (l *List) GetAll() (values []int64, ok bool) {
 	return values, true
 }
 
-func (l *List) GetAllByValue(value int64) (ids []int64, ok bool) {
+func (l *List) GetAllByValue(value interface{}) (ids []int64, ok bool) {
 	valuesArr, _ := l.GetAll()
 	if valuesArr != nil {
 		for key, val := range valuesArr {
@@ -80,7 +84,7 @@ func (l *List) getNodeByIndex(id int64) *node {
 	return nil
 }
 
-func (l *List) GetByIndex(id int64) (value int64, ok bool) {
+func (l *List) GetByIndex(id int64) (value interface{}, ok bool) {
 
 	curr := l.getNodeByIndex(id)
 	if curr == nil {
@@ -89,7 +93,7 @@ func (l *List) GetByIndex(id int64) (value int64, ok bool) {
 	return curr.value, true
 }
 
-func (l *List) GetByValue(value int64) (id int64, ok bool) {
+func (l *List) GetByValue(value interface{}) (id int64, ok bool) {
 	curr := l.fn
 	for curr != nil {
 		if curr.value == value {
@@ -110,13 +114,17 @@ func (l *List) updateIndexes() {
 	}
 }
 
-func (l *List) Add(value int64) {
+func (l *List) Add(value interface{}) (int64, error) {
 	newNode := &node{value: value, next: nil, index: l.len}
 
 	if l.fn == nil {
 		l.len++
 		l.fn = newNode
-		return
+		return 0, nil
+	}
+
+	if reflect.TypeOf(value) != reflect.TypeOf(l.fn.value) {
+		return 0, ErrMismatchType
 	}
 
 	curr := l.fn
@@ -126,49 +134,60 @@ func (l *List) Add(value int64) {
 
 	curr.next = newNode
 	l.len++
+	return l.len - 1, nil
 }
 
-func (l *List) RemoveByIndex(id int64) (ok bool) {
+func (l *List) RemoveByIndex(id int64) {
 	switch {
 	case id < 0 || id > l.len-1:
-		return false
+		return
 	case id == l.len-1:
 		if id == 0 {
 			l.fn = nil
 			l.updateIndexes()
-			return true
+			return
 		} else {
 			curr := l.getNodeByIndex(id - 1)
 			curr.next = nil
 			l.updateIndexes()
-			return true
+			return
 		}
 	case id == 0:
 		l.fn = l.getNodeByIndex(1)
 		l.updateIndexes()
-		return true
+		return
 
 	default:
 		l.getNodeByIndex(id - 1).next = l.getNodeByIndex(id + 1)
 		l.updateIndexes()
-		return true
+		return
 	}
 }
 
-func (l *List) RemoveAllByValue(value int64) (ok bool) {
-	_, isFinded := l.GetByValue(value)
-	for isFinded {
+func (l *List) Count(value interface{}) int {
+	curr := l.fn
+	var counter int = 0
+	for curr != nil {
+		if curr.value == value {
+			counter++
+		}
+		curr = curr.next
+	}
+	return counter
+}
+
+func (l *List) RemoveAllByValue(value interface{}) {
+	amount := l.Count(value)
+	for amount != 0 {
 		l.RemoveByValue(value)
-		_, isFinded = l.GetByValue(value)
-		ok = true
+		amount--
 	}
-	return
 }
 
-func (l *List) RemoveByValue(value int64) (ok bool) {
+func (l *List) RemoveByValue(value interface{}) {
 	curr := l.fn
 	if curr == nil {
-		return false
+		return
 	}
 
 	if curr.value == value {
@@ -177,12 +196,12 @@ func (l *List) RemoveByValue(value int64) (ok bool) {
 			fmt.Println("List is empty")
 			l.len--
 			l.updateIndexes()
-			return true
+			return
 		}
 		l.fn = curr.next
 		l.len--
 		l.updateIndexes()
-		return true
+		return
 	}
 
 	for curr.next != nil {
@@ -191,19 +210,18 @@ func (l *List) RemoveByValue(value int64) (ok bool) {
 				curr.next = curr.next.next
 				l.len--
 				l.updateIndexes()
-				return true
+				return
 			} else {
 				curr.next = nil
 				l.len--
 				l.updateIndexes()
-				return true
+				return
 			}
 
 		} else {
 			curr = curr.next
 		}
 	}
-	return false
 }
 
 // Optional, not Tested

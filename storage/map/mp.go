@@ -1,46 +1,55 @@
 package mp
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"reflect"
+)
 
-type mp struct {
-	HashTable map[int64]int64
+var ErrMismatchType = errors.New("mismatched type: the type of the provided value does not match the type of items already in the storage")
+
+type Mp struct {
+	HashTable map[int64]interface{}
 	len       int64
 }
 
-func (myMap *mp) isEmpty() bool {
+func (myMap *Mp) isEmpty() bool {
 	if myMap.len <= 0 {
 		return true
 	}
 	return false
 }
 
-func NewMap() *mp {
-	hashTable := make(map[int64]int64, 0)
-	return &mp{HashTable: hashTable}
+func NewMap() *Mp {
+	hashTable := make(map[int64]interface{}, 0)
+	return &Mp{HashTable: hashTable}
 }
 
-func (myMap *mp) Clear() {
-	myMap.HashTable = map[int64]int64{}
+func (myMap *Mp) Clear() {
+	myMap.HashTable = map[int64]interface{}{}
 	myMap.len = 0
 }
 
-func (myMap *mp) Len() int64 {
+func (myMap *Mp) Len() int64 {
+
 	return myMap.len
 }
 
-func (myMap *mp) GetAll() (result []int64, ok bool) {
+func (myMap *Mp) GetAll() (result []interface{}, ok bool) {
+
 	if myMap.isEmpty() {
 		return result, false
 	}
 	var i int64 = 0
-	result = make([]int64, myMap.len, myMap.len)
+	result = make([]interface{}, myMap.len, myMap.len)
 	for ; i < myMap.len; i++ {
 		result[i] = myMap.HashTable[i]
 	}
 	return result, true
 }
 
-func (myMap *mp) GetAllByValue(value int64) (ids []int64, ok bool) {
+func (myMap *Mp) GetAllByValue(value interface{}) (ids []int64, ok bool) {
+
 	if myMap.isEmpty() {
 		return
 	}
@@ -56,7 +65,8 @@ func (myMap *mp) GetAllByValue(value int64) (ids []int64, ok bool) {
 	return
 }
 
-func (myMap *mp) Print() {
+func (myMap *Mp) Print() {
+
 	if myMap.isEmpty() {
 		fmt.Println("Map is empty")
 		return
@@ -69,14 +79,15 @@ func (myMap *mp) Print() {
 	fmt.Println("")
 }
 
-func (myMap *mp) GetByIndex(id int64) (value int64, ok bool) {
+func (myMap *Mp) GetByIndex(id int64) (value interface{}, ok bool) {
+
 	if id >= myMap.len {
 		return 0, false
 	}
 	return myMap.HashTable[id], true
 }
 
-func (myMap *mp) GetByValue(value int64) (id int64, ok bool) {
+func (myMap *Mp) GetByValue(value interface{}) (id int64, ok bool) {
 	if myMap.isEmpty() {
 		return 0, false
 	}
@@ -89,26 +100,37 @@ func (myMap *mp) GetByValue(value int64) (id int64, ok bool) {
 	return 0, false
 }
 
-func (myMap *mp) Add(data int64) {
+func (myMap *Mp) Add(data interface{}) (int64, error) {
+	if myMap.isEmpty() {
+		myMap.HashTable[0] = data
+		myMap.len++
+		return 0, nil
+	}
+
+	if reflect.TypeOf(data) != reflect.TypeOf(myMap.HashTable[0]) {
+		return 0, ErrMismatchType
+	}
+
 	myMap.HashTable[myMap.len] = data
 	myMap.len++
+	return myMap.len - 1, nil
 }
 
-func (myMap *mp) RemoveByIndex(id int64) (ok bool) {
+func (myMap *Mp) RemoveByIndex(id int64) {
 
 	if myMap.isEmpty() {
 		fmt.Println("Map is empty")
-		return false
+		return
 	}
 
 	if id < 0 || id > myMap.len {
-		return false
+		return
 	}
 
 	if id == myMap.len-1 {
 		delete(myMap.HashTable, id)
 		myMap.len--
-		return true
+		return
 	}
 
 	id += 1
@@ -118,35 +140,39 @@ func (myMap *mp) RemoveByIndex(id int64) (ok bool) {
 	}
 	delete(myMap.HashTable, myMap.len-1)
 	myMap.len--
-	return true
-
-}
-
-func (myMap *mp) RemoveAllByValue(value int64) (ok bool) {
-	if myMap.isEmpty() {
-		return false
-	}
-	//var i int64 = 0
-	finded := myMap.RemoveByValue(value)
-	for finded {
-		finded = myMap.RemoveByValue(value)
-		ok = true
-	}
 	return
 
 }
 
-func (myMap *mp) RemoveByValue(value int64) (ok bool) {
+func (myMap *Mp) Count(value interface{}) int {
+	counter := 0
+	var i int64 = 0
+	for ; i < myMap.len; i++ {
+		if myMap.HashTable[i] == value {
+			counter++
+		}
+	}
+	return counter
+}
+
+func (myMap *Mp) RemoveAllByValue(value interface{}) {
+	amount := myMap.Count(value)
+	for ; amount != 0; amount-- {
+		myMap.RemoveByValue(value)
+	}
+}
+
+func (myMap *Mp) RemoveByValue(value interface{}) {
+
 	if myMap.isEmpty() {
-		return false
+		return
 	}
 
 	var i int64 = 0
 	for ; i < myMap.len; i++ {
 		if myMap.HashTable[i] == value {
 			myMap.RemoveByIndex(i)
-			return true
+			return
 		}
 	}
-	return false
 }

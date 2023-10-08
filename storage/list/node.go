@@ -1,7 +1,7 @@
 package list
 
 type node struct {
-	value int64
+	value interface{}
 	index int64
 	next  *node
 }

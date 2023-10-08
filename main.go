@@ -1,43 +1,28 @@
 package main
 
 import (
-	list "storage.com/storage/list"
-	mp "storage.com/storage/map"
+	"fmt"
+
+	Storage "storage.com/storage"
 )
 
 func main() {
 
-	type Storage interface {
-		Clear()
-		Len() int64
-		GetAll() ([]int64, bool)
-		GetAllByValue(int64) ([]int64, bool)
-		Print()
-		GetByIndex(int64) (int64, bool)
-		GetByValue(int64) (int64, bool)
-		Add(int64)
-		RemoveAllByValue(int64) bool
-		RemoveByIndex(int64) bool
-		RemoveByValue(int64) bool
+	var myStorage Storage.Storage
+
+	myStorage = Storage.NewList()
+	myStorage.Add(10)
+	for i := 0; i < 10; i++ {
+		myStorage.Add(i)
+		myStorage.Add(i)
 	}
-
-	var myStorage Storage
-
-	// list
-	myStorage = list.Newlist()
-	myStorage.Add(3)
-	myStorage.Add(1)
-	myStorage.Add(2)
-	myStorage.Add(3)
-	myStorage.RemoveAllByValue(3)
+	myStorage.RemoveByIndex(10)
+	myStorage.RemoveByValue(4)
+	myStorage.RemoveAllByValue(2)
+	myStorage.RemoveAllByValue(11)
 	myStorage.Print()
-
-	// map
-	myStorage = mp.NewMap()
-	myStorage.Add(3)
-	myStorage.Add(1)
-	myStorage.Add(2)
-	myStorage.Add(3)
-	myStorage.RemoveAllByValue(3)
-	myStorage.Print()
+	fmt.Println(myStorage.Add("wsdefrtg"))
+	fmt.Println(myStorage.GetAll())
+	fmt.Println(myStorage.GetAllByValue(9))
+	fmt.Println(myStorage.GetByIndex(10))
 }
